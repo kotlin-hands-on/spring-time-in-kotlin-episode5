@@ -3,18 +3,15 @@ package demo
 import demo.kx.uuid
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.data.annotation.Id
-import org.springframework.data.jdbc.repository.query.Query
-import org.springframework.data.relational.core.mapping.Table
-import org.springframework.data.repository.CrudRepository
+import org.springframework.http.HttpStatus
 import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.core.RowMapper
 import org.springframework.jdbc.core.query
 import org.springframework.stereotype.Controller
 import org.springframework.stereotype.Service
 import org.springframework.ui.Model
 import org.springframework.ui.set
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @SpringBootApplication
 class DemoApplication
@@ -40,7 +37,8 @@ class MessageResource(val service: MessageService) {
     fun index(): List<Message> = service.findMessages()
 
     @GetMapping("/{id}")
-    fun index(@PathVariable id: String): List<Message> = service.findMessageById(id)
+    fun index(@PathVariable id: String): Message =
+        service.findMessageById(id) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found")
 
     @PostMapping
     fun post(@RequestBody message: Message) {
@@ -56,9 +54,9 @@ class MessageService(val db: JdbcTemplate) {
         Message(rs.getString("id"), rs.getString("text"))
     }
 
-    fun findMessageById(id: String): List<Message> = db.query("select * from messages where id = ?", id) { rs, _ ->
+    fun findMessageById(id: String): Message? = db.query("select * from messages where id = ?", id) { rs, _ ->
         Message(rs.getString("id"), rs.getString("text"))
-    }
+    }.firstOrNull()
 
     fun post(message: Message){
         db.update("insert into messages values ( ?, ? )", message.id ?: message.text.uuid(),
