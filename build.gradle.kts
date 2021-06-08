@@ -11,6 +11,9 @@ group = "com.example"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
+val testcontainersVersion = "1.15.3"
+val postgresVersion="42.2.14"
+
 repositories {
     mavenCentral()
 }
@@ -30,6 +33,12 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.mockk:mockk:1.10.4")
     testImplementation("com.ninja-squad:springmockk:3.0.1")
+
+    testImplementation("org.testcontainers:testcontainers:$testcontainersVersion")
+    testImplementation("org.testcontainers:junit-jupiter:$testcontainersVersion")
+    testImplementation("org.testcontainers:postgresql:$testcontainersVersion")
+
+    implementation("org.postgresql:postgresql:$postgresVersion")
 }
 
 tasks.withType<KotlinCompile> {
