@@ -2,6 +2,7 @@ package demo
 
 import demo.kx.uuid
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -18,6 +19,7 @@ import kotlin.random.Random
         "spring.datasource.url=jdbc:h2:mem:testdb"
     ]
 )
+@Disabled
 class DemoApplicationTests(@Autowired val client: TestRestTemplate) {
 
     @Test

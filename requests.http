@@ -19,7 +19,7 @@ POST http://localhost:8080
 Content-Type: application/json
 
 {
-  "text": "Privet!"
+  "text": "Privet2!"
 }
 
 ### get all the messages

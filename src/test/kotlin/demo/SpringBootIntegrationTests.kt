@@ -1,11 +1,7 @@
 package demo
 
-import demo.kx.uuid
 import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.MethodOrderer
-import org.junit.jupiter.api.Order
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestMethodOrder
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -13,18 +9,21 @@ import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.getForObject
 import org.springframework.boot.test.web.client.postForObject
 import org.springframework.http.HttpStatus
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import kotlin.random.Random
 
 @Testcontainers
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class SpringBootIntegrationTests(@Autowired val client: TestRestTemplate) {
+class SpringBootIntegrationTests(
+    @Autowired val client: TestRestTemplate,
+    @Autowired val jdbc: JdbcTemplate,
+) {
     companion object {
         @Container
         val container = postgres("postgres:13-alpine") {
@@ -43,17 +42,21 @@ class SpringBootIntegrationTests(@Autowired val client: TestRestTemplate) {
         }
     }
 
+    @AfterEach
+    fun cleanup() {
+        jdbc.execute("truncate table messages")
+    }
+
     @Test
     @Order(1)
     fun `test hello endpoint`() {
-        println(">>>>>>>>>>>>> Asserting Hello endpoint! >>>>>>>>>>>>>>>>>>>>>>>>> ")
         val entity = client.getForEntity<String>("/hello")
         Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
         Assertions.assertThat(entity.body).contains("Hello")
     }
 
-    //TODO: remove
-    val id = "e3b7f959-f5c2-3d07-86e3-cd9df75e0b83"//"${Random.nextInt()}".uuid()
+    //TODO: this is just to demonstrate the issue with the database re-use between tests
+    val id = "this is wrong!!!!"//"${Random.nextInt()}".uuid()
 
     @Test
     @Order(2)
