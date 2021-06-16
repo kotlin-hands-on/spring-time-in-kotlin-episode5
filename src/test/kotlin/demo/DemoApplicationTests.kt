@@ -39,7 +39,7 @@ class DemoApplicationTests(
     companion object {
         @Container
         val container = postgres("postgres:13-alpine") {
-            withInitScript("sql/schema.ddl")
+            withInitScript("sql/schema.sql")
             withDatabaseName("db")
             withUsername("user")
             withPassword("password")

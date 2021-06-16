@@ -11,7 +11,7 @@ class IntegrationTests {
     @Container
     var container = postgres("postgres:13-alpine") {
 //        withExposedPorts(6379)
-        withInitScript("sql/schema.ddl")
+        withInitScript("sql/schema.sql")
         withDatabaseName("db")
         withUsername("user")
         withPassword("password")
