@@ -17,13 +17,37 @@ import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import kotlin.random.Random
+
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = [
-        "spring.datasource.url=jdbc:h2:mem:testdb"
-    ]
 )
-class DemoApplicationTests(@Autowired val client: TestRestTemplate) {
+@Testcontainers
+class DemoApplicationTests(
+    @Autowired val client: TestRestTemplate,
+    @Autowired val jdbc: JdbcTemplate,
+) {
+    @AfterEach
+    fun cleanup() {
+        jdbc.execute("truncate table messages")
+    }
+
+    companion object {
+        @Container
+        val container = postgres("postgres:13-alpine") {
+            withDatabaseName("db")
+            withUsername("user")
+            withPassword("password")
+            withInitScript("sql/schema.sql")
+        }
+
+        @JvmStatic
+        @DynamicPropertySource
+        fun datasourceConfig(registry: DynamicPropertyRegistry) {
+            registry.add("spring.datasource.url", container::getJdbcUrl)
+            registry.add("spring.datasource.password", container::getPassword)
+            registry.add("spring.datasource.username", container::getUsername)
+        }
+    }
 
     @Test
     fun `test hello endpoint`() {

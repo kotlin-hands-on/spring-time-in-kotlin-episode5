@@ -1,25 +1,24 @@
 package demo
 
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
 @Testcontainers
 class IntegrationTests {
-
-    @Container
-    var container = postgres("postgres:13-alpine") {
-//        withExposedPorts(6379)
-        withInitScript("sql/schema.sql")
-        withDatabaseName("db")
-        withUsername("user")
-        withPassword("password")
+    companion object {
+        @Container
+        val container = postgres("postgres:13-alpine") {
+            withDatabaseName("db")
+            withUsername("user")
+            withPassword("password")
+            withInitScript("sql/schema.sql")
+        }
     }
 
     @Test
-    fun `the container is up and running`() {
-        assertTrue(container.isRunning)
+    fun `container is up and running`() {
+        Assertions.assertTrue(container.isRunning)
     }
-
 }
