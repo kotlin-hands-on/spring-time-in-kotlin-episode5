@@ -9,7 +9,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 class IntegrationTests {
     companion object {
         @Container
-        val container = postgres("postgres:13-alpine") {
+        val container = postgres("13-alpine") {
             withDatabaseName("db")
             withUsername("user")
             withPassword("password")
