@@ -14,8 +14,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
+import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.utility.DockerImageName
 import kotlin.random.Random
 
 @SpringBootTest(
@@ -39,6 +41,21 @@ class DemoApplicationTests(
             withPassword("password")
             withInitScript("sql/schema.sql")
         }
+
+        // Kotlin 1.5.20
+        val containerA = PostgreSQLContainer<Nothing>(DockerImageName.parse("postgres:13-alpine")).apply {
+            withDatabaseName("db")
+            withUsername("user")
+            withPassword("password")
+            withInitScript("sql/schema.sql")
+        }
+
+        // Kotlin 1.5.30
+        val containerB = PostgreSQLContainer(DockerImageName.parse("postgres:13-alpine"))
+            .withDatabaseName("db")
+            .withUsername("user")
+            .withPassword("password")
+            .withInitScript("sql/schema.sql")
 
         @JvmStatic
         @DynamicPropertySource

@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot") version "2.4.1"
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
-    kotlin("jvm") version "1.4.21"
+    kotlin("jvm") version "1.5.30-RC"
     kotlin("plugin.spring") version "1.4.21"
 }
 
@@ -42,10 +42,15 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
+        freeCompilerArgs = listOf("-Xjsr305=strict", "-Xself-upper-bound-inference", "-XXLanguage:+TypeInferenceOnCallsWithSelfTypes", "-Xopt-in=kotlin.RequiresOptIn")
         jvmTarget = "11"
     }
 }
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions.freeCompilerArgs += "-Xself-upper-bound-inference"
+}
+
 
 tasks.withType<Test> {
     useJUnitPlatform()
